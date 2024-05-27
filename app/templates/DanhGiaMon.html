@@ -1,0 +1,195 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đánh Giá Môn Học</title>
+    <link rel="stylesheet" href="{% static 'CSS/danhgiamonhoc.css' %}" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+    />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="sidebar">
+        <div class="header">
+          <img src="{% static 'IMG/icon.png' %}" alt="" />
+          <h1 onclick="window.location.href='{% url 'trang_chu' %}';">
+            ONEEIGHT
+          </h1>
+        </div>
+        <div class="menu">
+          <div
+            class="item"
+            onclick="window.location.href='{% url 'trang_chu' %}';"
+          >
+            <div class="img">
+              <img src="{% static 'IMG/icons8-home-64.png' %}" alt="" />
+            </div>
+            <h3>Trang Chủ</h3>
+          </div>
+          <div
+            class="item"
+            onclick="window.location.href='{% url 'danh_sach_mon_hoc' %}';"
+          >
+            <div class="img">
+              <img src="{% static 'IMG/book.png' %}" alt="" />
+            </div>
+            <h3>Môn Học</h3>
+          </div>
+          <div
+            class="item"
+            onclick="window.location.href='{% url 'danh_gia' %}';"
+          >
+            <div class="img">
+              <img src="{% static 'IMG/messenger.png' %}" alt="" />
+            </div>
+            <h3>Đánh Giá</h3>
+          </div>
+          <div
+            class="item"
+            onclick="window.location.href='{% url 'thong_ke' %}';"
+          >
+            <div class="img">
+              <img src="{% static 'IMG/graph.png' %}" alt="" />
+            </div>
+            <h3>Thống Kê</h3>
+          </div>
+          <div
+            class="item"
+            onclick="window.location.href='{% url 'tai_khoan' %}';"
+          >
+            <div class="img">
+              <img src="{% static 'IMG/user.png' %}" alt="" />
+            </div>
+            <h3>Tài Khoản</h3>
+          </div>
+        </div>
+        <div
+          class="footer"
+          onclick="window.location.href='{% url 'dang_nhap' %}';"
+        >
+          <div class="img">
+            <img src="{% static 'IMG/icons8-log-out-64.png' %}" alt="" />
+          </div>
+          <h2>Đăng Xuất</h2>
+        </div>
+      </div>
+      <div class="content">
+        <div class="title">
+          <h1>Đánh Giá Môn Học</h1>
+        </div>
+        <div class="namelist">
+          <h2>Đánh giá môn học: {{ course.ten_mon_hoc }}</h2>
+
+          <ul>
+            {% for course in courses %}
+            <li
+              onclick="selectCourse('{{ course.ma_mon_hoc }}', '{{ course.ten_mon_hoc }}')"
+            >
+              {{ course.ten_mon_hoc }}
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+        <div class="list">
+          <h1 id="courseName"></h1>
+          <form id="quizForm" method="post">
+            {% csrf_token %}
+            <input type="hidden" id="courseId" name="ma_mon_hoc" value="" />
+            <div class="questions">
+              <div class="questions">
+                <div class="question">
+                  <h3>
+                    Câu hỏi 1: Bạn cảm thấy nội dung môn học này có liên quan và
+                    hữu ích cho mục tiêu học tập của bạn không?
+                  </h3>
+                  <input type="radio" name="question1" value="1" /> Rất không
+                  hài lòng<br />
+                  <input type="radio" name="question1" value="2" /> Không hài
+                  lòng<br />
+                  <input type="radio" name="question1" value="3" /> Bình
+                  thường<br />
+                  <input type="radio" name="question1" value="4" /> Hài lòng<br />
+                  <input type="radio" name="question1" value="5" /> Rất hài
+                  lòng<br />
+                </div>
+                <div class="question">
+                  <h3>
+                    Câu hỏi 2: Tài liệu học tập được cung cấp cho môn học này có
+                    đầy đủ và dễ hiểu không?
+                  </h3>
+                  <input type="radio" name="question2" value="1" /> Rất không
+                  hài lòng<br />
+                  <input type="radio" name="question2" value="2" /> Không hài
+                  lòng<br />
+                  <input type="radio" name="question2" value="3" /> Bình
+                  thường<br />
+                  <input type="radio" name="question2" value="4" /> Hài lòng<br />
+                  <input type="radio" name="question2" value="5" /> Rất hài
+                  lòng<br />
+                </div>
+                <div class="question">
+                  <h3>
+                    Câu hỏi 3: Bạn đánh giá như thế nào về phương pháp giảng dạy
+                    của giảng viên?
+                  </h3>
+                  <input type="radio" name="question3" value="1" /> Rất không
+                  hài lòng<br />
+                  <input type="radio" name="question3" value="2" /> Không hài
+                  lòng<br />
+                  <input type="radio" name="question3" value="3" /> Bình
+                  thường<br />
+                  <input type="radio" name="question3" value="4" /> Hài lòng<br />
+                  <input type="radio" name="question3" value="5" /> Rất hài
+                  lòng<br />
+                </div>
+                <div class="question">
+                  <h3>Câu hỏi 4: Bạn cảm thấy môn học này như thế nào?</h3>
+                  <textarea
+                    name="comment"
+                    placeholder="Nhận xét của bạn..."
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+            <button type="submit" id="submitBtn">Gửi Đánh Giá</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    <script>
+      function selectCourse(maMonHoc, tenMonHoc) {
+          document.getElementById('courseId').value = maMonHoc;
+          document.getElementById('courseName').innerText = "Đánh giá cho môn: " + tenMonHoc;
+          var submitUrl = "{% url 'danh_gia_mon_hoc' '123' %}".replace('123', maMonHoc);
+          $('#quizForm').attr('action', submitUrl);
+      }
+
+
+      $(document).ready(function() {
+          $('#quizForm').on('submit', function(e) {
+              e.preventDefault(); // Ngăn không cho form submit theo cách thông thường
+              var formData = $(this).serialize(); // Lấy dữ liệu từ form
+
+              $.ajax({
+                  type: 'POST',
+                  url: $(this).attr('action'), // URL được cập nhật bởi hàm selectCourse
+                  data: formData,
+                  success: function(response) {
+                      alert('Đánh giá của bạn đã được gửi thành công!');
+                      $('#quizForm')[0].reset(); // Reset các trường của form sau khi submit thành công
+                      window.location.href = {% url 'danh_gia'  %};
+                  },
+                  error: function() {
+                      alert('Có lỗi xảy ra, vui lòng thử lại.'); // Thông báo khi có lỗi
+                  }
+              });
+          });
+      });
+    </script>
+  </body>
+</html>

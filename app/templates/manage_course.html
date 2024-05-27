@@ -1,0 +1,35 @@
+<!-- templates/manage_course.html -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Courses</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <div class="container">
+        <h1>Manage Courses</h1>
+
+        {% if user.has_perm('app.can_add_courses') %}
+            <h2>Add New Course</h2>
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit">Add Course</button>
+            </form>
+        {% endif %}
+
+        <h2>Your Courses</h2>
+        <ul>
+            {% for course in courses %}
+                <li>{{ course.title }} - {{ course.description }}</li>
+                {% if user.has_perm('app.can_edit_courses') %}
+                    <a href="{% url 'edit_course' course.pk %}">Edit</a>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>
