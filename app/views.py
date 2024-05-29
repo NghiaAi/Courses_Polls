@@ -263,7 +263,7 @@ def password_reset_request(request):
             send_mail(
                 'Password Recovery',
                 f'Your password is: {user.raw_password}',  
-                'quanlydiennuoc28@gmail.com',
+                'nta21303@gmail.com@gmail.com',
                 [user.email],
                 fail_silently=False,
             )
