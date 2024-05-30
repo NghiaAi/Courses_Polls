@@ -1,0 +1,229 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đánh Giá</title>
+    <link rel="stylesheet" href="{% static 'CSS/DanhGia.css' %}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="header">
+                <img src="{% static 'IMG/icon.png' %}" alt="Icon" />
+                <h1 onclick="window.location.href='{% url 'trang_chu' %}';">ONEEIGHT</h1>
+            </div>
+            <div class="menu">
+                <div class="item" onclick="window.location.href='{% url 'trang_chu' %}';">
+                    <div class="img">
+                        <img src="{% static 'IMG/icons8-home-64.png' %}" alt="" />
+                    </div>
+                    <h3>Trang Chủ</h3>
+                </div>
+                <div class="item" onclick="window.location.href='{% url 'danh_sach_mon_hoc' %}';">
+                    <div class="img">
+                        <img src="{% static 'IMG/book.png' %}" alt="" />
+                    </div>
+                    <h3>Môn Học</h3>
+                </div>
+                <div class="item" onclick="window.location.href='{% url 'danh_gia' %}';">
+                    <div class="img">
+                        <img src="{% static 'IMG/messenger.png' %}" alt="" />
+                    </div>
+                    <h3>Đánh Giá</h3>
+                </div>
+                <div class="item" onclick="window.location.href='{% url 'thong_ke' %}';">
+                    <div class="img">
+                        <img src="{% static 'IMG/graph.png' %}" alt="" />
+                    </div>
+                    <h3>Thống Kê</h3>
+                </div>
+                <div class="item" onclick="window.location.href='{% url 'tai_khoan' %}';">
+                    <div class="img">
+                        <img src="{% static 'IMG/user.png' %}" alt="" />
+                    </div>
+                    <h3>Tài Khoản</h3>
+                </div>
+            </div>
+            <div class="footer" onclick="window.location.href='{% url 'dang_nhap' %}';">
+                <div class="img">
+                    <img src="{% static 'IMG/icons8-log-out-64.png' %}" alt="" />
+                </div>
+                <h2>Đăng Xuất</h2>
+            </div>
+        </div>
+        <div class="content">
+            <div class="title">
+                <h1>Đánh Giá</h1>
+                <div class="img" onclick="window.location.href='{% url 'tai_khoan' %}';">
+                    <img src="{% static 'IMG/account.png' %}" alt="" id="avatarImage" />
+                </div>
+            </div>
+            <div class="namelist">
+                <h2>Hãy cho biết mức độ đồng ý bằng cách <i class="fa-regular fa-square-check"></i> vào các ô trống</h2>
+                <div class="tag">
+                    <div class="circle">1</div><h3>Rất không hài lòng</h3>
+                    <div class="circle">2</div><h3>Không hài lòng</h3>
+                    <div class="circle">3</div><h3>Bình thường</h3>
+                    <div class="circle">4</div><h3>Hài lòng</h3>
+                    <div class="circle">5</div><h3>Rất hài lòng</h3>
+                </div>
+                <h1>Chọn Môn Học Để Đánh Giá</h1>
+                <div style="display: flex; align-items: center;">
+                    <input type="text" id="searchInput" placeholder="Nhập tên môn học hoặc mã môn học..." autocomplete="off" />
+                    <button id="myRatingsButton">Đánh giá của tôi</button>
+                </div>
+                <ul id="suggestions" style="display: none"></ul>
+            </div>
+            <div class="list">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>Mã Môn Học</th>
+                            <th>Tên Môn Học</th>
+                            <th>Số TC</th>
+                            <th>Tên Giảng Viên</th>
+                            <th>Số lượt đánh giá</th>
+                        </tr>
+                    </thead>
+                    <tbody id="courseTableBody">
+                        {% for course in courses %}
+                        <tr onclick="checkRating('{{ course.ma_mon_hoc }}');" style="cursor: pointer">
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ course.ma_mon_hoc }}</td>
+                            <td>{{ course.ten_mon_hoc }}</td>
+                            <td>{{ course.so_tin_chi }}</td>
+                            <td>{{ course.ten_giang_vien }}</td>
+                            <td>{{ course.so_luong_cmt }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6">Không có môn học nào.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var courses = [{% for course in courses %}{ ma_mon_hoc: "{{ course.ma_mon_hoc }}", ten_mon_hoc: "{{ course.ten_mon_hoc }}", url: "{% url 'danh_gia_mon_hoc' course.ma_mon_hoc %}" },{% endfor %}];
+
+            var searchInput = document.getElementById('searchInput');
+            var suggestions = document.getElementById('suggestions');
+            var myRatingsButton = document.getElementById('myRatingsButton');
+
+            function handleSelectCourse(maMonHoc) {
+                checkRating(maMonHoc);
+            }
+
+            searchInput.addEventListener('input', function() {
+                var input = this.value.toLowerCase();
+                suggestions.innerHTML = '';
+                if (input.length > 0) {
+                    suggestions.style.display = 'block';
+                    courses.forEach(function(course) {
+                        if (course.ten_mon_hoc.toLowerCase().includes(input) || course.ma_mon_hoc.toLowerCase().includes(input)) {
+                            var li = document.createElement('li');
+                            li.textContent = course.ten_mon_hoc + " (" + course.ma_mon_hoc + ")";
+                            li.onclick = function() {
+                                handleSelectCourse(course.ma_mon_hoc);
+                            };
+                            suggestions.appendChild(li);
+                        }
+                    });
+                    if (suggestions.childNodes.length === 0) {
+                        suggestions.style.display = 'none';
+                    }
+                } else {
+                    suggestions.style.display = 'none';
+                }
+            });
+
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && suggestions.childNodes.length === 1) {
+                    handleSelectCourse(courses.find(course => course.ten_mon_hoc.toLowerCase().includes(this.value.toLowerCase()) || course.ma_mon_hoc.toLowerCase().includes(this.value.toLowerCase())).ma_mon_hoc);
+                }
+            });
+
+            document.addEventListener('click', function(e) {
+                if (!suggestions.contains(e.target) && e.target !== searchInput) {
+                    suggestions.style.display = 'none';
+                }
+            });
+
+            myRatingsButton.addEventListener('click', function() {
+                fetch('/my-ratings/', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        displayMyRatings(data.ratings);
+                    } else {
+                        alert(data.message);
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            });
+        });
+
+        function checkRating(maMonHoc) {
+            fetch(`/danh-gia-mon-hoc/${maMonHoc}/`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                if (response.status === 400) {
+                    return response.json();
+                } else {
+                    window.location.href = `/danh-gia-mon-hoc/${maMonHoc}/`;
+                }
+            })
+            .then(data => {
+                if (data && data.status === 'error') {
+                    alert(data.message);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        function displayMyRatings(ratings) {
+            var courseTableBody = document.getElementById('courseTableBody');
+            courseTableBody.innerHTML = '';
+            ratings.forEach(function(rating, index) {
+                var tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${rating.ma_mon_hoc}</td>
+                    <td>${rating.ten_mon_hoc}</td>
+                    <td>${rating.so_tin_chi}</td>
+                    <td>${rating.ten_giang_vien}</td>
+                    <td><button onclick="editRating('${rating.ma_mon_hoc}')">Chỉnh sửa</button></td>
+                `;
+                courseTableBody.appendChild(tr);
+            });
+        }
+
+        function editRating(maMonHoc) {
+            window.location.href = `/edit-rating/${maMonHoc}/`;
+        }
+
+        var avatarUrl = sessionStorage.getItem("avatarUrl");
+        if (avatarUrl) {
+            document.getElementById("avatarImage").src = avatarUrl;
+        }
+    </script>
+</body>
+</html>

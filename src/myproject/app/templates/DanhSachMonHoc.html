@@ -1,0 +1,134 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Danh Sach Mon Hoc</title>
+    <link rel="stylesheet" href="{% static "/CSS/DanhSachMonHoc.css" %}" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="sidebar">
+        <div class="header">
+          <img src="{% static "/IMG/icon.png" %}" alt="" />
+          <h1 onclick="window.location.href='{% url 'trang_chu' %}';">ONEEIGHT</h1>
+        </div>
+        <div class="menu">
+          <div class="item" onclick="window.location.href='{% url 'trang_chu' %}';">
+            <div class="img">
+              <img src="{% static "/IMG/icons8-home-64.png" %}" alt="" />
+            </div>
+            <h3>Trang Chủ</h3>
+          </div>
+          <div
+            class="item"
+            onclick="window.location.href='{% url 'danh_sach_mon_hoc' %}';"
+          >
+            <div class="img">
+              <img src="{% static "/IMG/book.png" %}" alt="" />
+            </div>
+            <h3>Môn Học</h3>
+          </div>
+          <div class="item" onclick="window.location.href='{% url 'danh_gia' %}';">
+            <div class="img">
+              <img src="{% static "/IMG/messenger.png" %}" alt="" />
+            </div>
+            <h3>Đánh Giá</h3>
+          </div>
+          <div class="item" onclick="window.location.href='{% url 'thong_ke' %}';">
+            <div class="img">
+              <img src="{% static "/IMG/graph.png" %}" alt="" />
+            </div>
+            <h3>Thống Kê</h3>
+          </div>
+          <div class="item" onclick="window.location.href='{% url 'tai_khoan' %}';">
+            <div class="img">
+              <img src="{% static "/IMG/user.png" %}" alt="" />
+            </div>
+            <h3>Tài Khoản</h3>
+          </div>
+        </div>
+        <div class="footer" onclick="window.location.href={% url 'dang_nhap' %}';">
+          <div class="img">
+            <img src="{% static "/IMG/icons8-log-out-64.png" %}" alt="" />
+          </div>
+          <h2>Đăng Xuất</h2>
+        </div>
+      </div>
+      <div class="content">
+        <div class="title">
+          <h1>Môn Học</h1>
+          <div class="img" onclick="window.location.href='{% url 'tai_khoan' %}';">
+            <img src="{% static 'IMG/account.png' %}" alt="" id="avatarImage"/>
+          </div>
+        </div>
+        <div class="namelist">
+          <h1>Danh Sách Môn Học</h1>
+        </div>
+        <div class="list">
+          <table id="listcourseTableBody">
+              <thead>
+                  <tr>
+                      <th>STT</th>
+                      <th>Mã Môn Học</th>
+                      <th>Tên Môn Học</th>
+                      <th>Số TC</th>
+                      <th>Tên Giảng Viên</th>
+                      <th>Số Lượt Đánh Giá</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  {% for course in courses %}
+                  <tr  onclick="location.href='{% url 'thong_ke' %}?ma_mon_hoc={{ course.ma_mon_hoc }}';" style="cursor:pointer;">
+                      <td>{{ forloop.counter }}</td>
+                      <td>{{ course.ma_mon_hoc }}</td>
+                      <td>{{ course.ten_mon_hoc }}</td>
+                      <td>{{ course.so_tin_chi }}</td>
+                      <td>{{ course.ten_giang_vien }}</td>
+                      <td>{{ course.so_luong_cmt }}</td>
+                  </tr>
+                  {% empty %}
+                  <tr>
+                      <td colspan="6">Không có môn học nào.</td>
+                  </tr>
+                  {% endfor %}
+              </tbody>
+          </table>
+      </div>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+          const tableBody =   document.getElementById('listcourseTableBody');
+          
+          fetch('/courses/')  // Gọi API để lấy danh sách môn học
+          .then(response => response.json())
+          .then(data => {
+              data.forEach((course, index) => {
+                  let row = tableBody.insertRow();
+                  let cell1 = row.insertCell(0);
+                  let cell2 = row.insertCell(1);
+                  let cell3 = row.insertCell(2);
+                  let cell4 = row.insertCell(3);
+                  let cell5 = row.insertCell(4);
+                  let cell6 = row.insertCell(5);
+      
+                  cell1.innerHTML = index + 1;
+                  cell2.innerHTML = course.ma_mon_hoc;
+                  cell3.innerHTML = course.ten_mon_hoc;
+                  cell4.innerHTML = course.so_tin_chi;
+                  cell5.innerHTML = course.ten_giang_vien;
+                  cell6.innerHTML = course.so_luong_cmt;
+              });
+          });
+        
+      });
+
+      var avatarUrl = sessionStorage.getItem("avatarUrl");
+      if (avatarUrl) {
+          document.getElementById("avatarImage").src = avatarUrl;
+      }
+      </script>
+      
+  </body>
+ 
+</html>

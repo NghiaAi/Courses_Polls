@@ -1,0 +1,151 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Thống Kê</title>
+    <link rel="stylesheet" href="{% static 'CSS/ThongKe.css' %}" />
+     
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="header">
+                <img src="{% static 'IMG/icon.png' %}" alt="" />
+                <h1 onclick="window.location.href='{% url 'trang_chu' %}';">ONEEIGHT</h1>
+            </div>
+            <div class="menu">
+                <div class="item" onclick="window.location.href='{% url 'trang_chu' %}';">
+                    <div class="img">
+                        <img src="{% static 'IMG/icons8-home-64.png' %}" alt="" />
+                    </div>
+                    <h3>Trang Chủ</h3>
+                </div>
+                <div class="item" onclick="window.location.href='{% url 'danh_sach_mon_hoc' %}';">
+                    <div class="img">
+                        <img src="{% static 'IMG/book.png' %}" alt="" />
+                    </div>
+                    <h3>Môn Học</h3>
+                </div>
+                <div class="item" onclick="window.location.href='{% url 'danh_gia' %}';">
+                    <div class="img">
+                        <img src="{% static 'IMG/messenger.png' %}" alt="" />
+                    </div>
+                    <h3>Đánh Giá</h3>
+                </div>
+                <div class="item" onclick="window.location.href='{% url 'thong_ke' %}';">
+                    <div class="img">
+                        <img src="{% static 'IMG/graph.png' %}" alt="" />
+                    </div>
+                    <h3>Thống Kê</h3>
+                </div>
+                <div class="item" onclick="window.location.href='{% url 'tai_khoan' %}';">
+                    <div class="img">
+                        <img src="{% static 'IMG/user.png' %}" alt="" />
+                    </div>
+                    <h3>Tài Khoản</h3>
+                </div>
+            </div>
+            <div class="footer" onclick="window.location.href='{% url 'dang_nhap' %}';">
+                <div class="img">
+                    <img src="{% static 'IMG/icons8-log-out-64.png' %}" alt="" />
+                </div>
+                <h2>Đăng Xuất</h2>
+            </div>
+        </div>
+        <div class="content">
+            <div class="title">
+                <h1>Thống Kê</h1>
+                <div class="img" onclick="window.location.href='{% url 'tai_khoan' %}';">
+                    <img src="{% static 'IMG/account.png' %}" alt="" id="avatarImage"/>
+                </div>
+            </div>
+            <div class="namelist">
+                <h2>Chọn môn học để xem thống kê:</h2>
+                <select name="subjects" id="subject-select" onchange="location.href='?ma_mon_hoc=' + this.value;">
+                    <option value="">--Chọn Môn Học--</option>
+                    {% for course in courses %}
+                        <option value="{{ course.ma_mon_hoc }}" {% if selected_course.ma_mon_hoc == course.ma_mon_hoc %}selected{% endif %}>
+                            {{ course.ma_mon_hoc }} - {{ course.ten_mon_hoc }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% if selected_course %}
+                <div class="course-details">
+                    <h2>Thông tin môn học: {{ selected_course.ten_mon_hoc }}</h2>
+                    {% if selected_course.ma_mon_hoc %}
+                    <button onclick="downloadCourseData('{{ selected_course.ma_mon_hoc }}')">Xuất Dữ liệu</button>
+                    {% endif %}
+
+                </div>
+                <div class="list">
+                    <table id="review-table">
+                        <thead>
+                            <tr>
+                                <th>STT</th>
+                                <th>MSSV</th>
+                                <th>Họ Và Tên</th>
+                                <th>Câu 1</th>
+                                <th>Câu 2</th>
+                                <th>Câu 3</th>
+                                <th>Câu 4</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+                            {% for rating in ratings %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ rating.mssv }}</td>
+                                <td>{{ rating.name }}</td>
+                                <td>{% if rating.cau1 == 1 %}Rất không hài lòng{% elif rating.cau1 == 2 %}Không hài lòng{% elif rating.cau1 == 3 %}Bình thường{% elif rating.cau1 == 4 %}Hài lòng{% elif rating.cau1 == 5 %}Rất hài lòng{% endif %}</td>
+                                <td>{% if rating.cau2 == 1 %}Rất không hài lòng{% elif rating.cau2 == 2 %}Không hài lòng{% elif rating.cau2 == 3 %}Bình thường{% elif rating.cau2 == 4 %}Hài lòng{% elif rating.cau2 == 5 %}Rất hài lòng{% endif %}</td>
+                                <td>{% if rating.cau3 == 1 %}Rất không hài lòng{% elif rating.cau3 == 2 %}Không hài lòng{% elif rating.cau3 == 3 %}Bình thường{% elif rating.cau3 == 4 %}Hài lòng{% elif rating.cau3 == 5 %}Rất hài lòng{% endif %}</td>
+                                <td>{{ rating.cau4 }}</td>
+                              
+
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="7">Không có đánh giá nào cho môn học này.</td>
+                            </tr>
+                            
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+            
+            {% endif %}
+            
+        </div>
+    </div>
+    <script>
+        function downloadCourseData(maMonHoc) {
+            const url = `/export-course-data/${maMonHoc}/`;  // Đảm bảo rằng đường dẫn này khớp với URL trong Django
+            fetch(url)
+                .then(response => response.blob())
+                .then(blob => {
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = `${maMonHoc}.txt`;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                })
+                .catch(error => console.error('There was an error:', error));
+        }
+        
+        var avatarUrl = sessionStorage.getItem("avatarUrl");
+        if (avatarUrl) {
+            document.getElementById("avatarImage").src = avatarUrl;
+        }
+        </script>
+        
+        
+</body>
+</html>
